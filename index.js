@@ -1,4 +1,5 @@
 const path = require("path");
+const axios = require("axios");
 
 require("dotenv").config({ path: path.join(__dirname, "Smilebot") });
 
@@ -17,6 +18,45 @@ const app = new App({
   socketMode: true
 });
 
+app.command("/smile-bot-catfact", async ({ ack, respond }) => {
+  await ack();
+
+  try {
+    const response = await axios.get("https://catfact.ninja/fact");
+    await respond({ text: `Cat Fact:\n${response.data.fact}` });
+  } catch (err) {
+    await respond({ text: "Failed to fetch a cat fact." });
+  }
+});
+
+app.command("/smile-bot-joke", async ({ ack, respond }) => {
+  await ack();
+
+  try {
+    const response = await axios.get("https://official-joke-api.appspot.com/random_joke");
+    await respond({
+      text:
+`${response.data.setup}
+
+${response.data.punchline}`
+    });
+  } catch (err) {
+    await respond({ text: "Failed to fetch a joke." });
+  }
+});
+
+app.command("/smile-bot-compliment", async ({ ack, respond }) => {
+  await ack();
+
+  try {
+    const response = await axios.get("https://complimentr.com/api");
+    await respond({
+      text: response.data.compliment
+    });
+  } catch (err) {
+    await respond({ text: "Couldn't find a compliment right now." });
+  }
+});
 app.command("/smile-bot-ping", async ({ command, ack, respond }) => {
   const start = Date.now();
   await ack();
@@ -25,6 +65,12 @@ app.command("/smile-bot-ping", async ({ command, ack, respond }) => {
 });
 
 (async () => {
-  await app.start();
-  console.log("bot is running!");
+  try {
+    console.log("Connecting to Slack...");
+    await app.start();
+    console.log("bot is running!");
+  } catch (error) {
+    console.error("Failed to start the Slack bot:", error);
+    process.exitCode = 1;
+  }
 })();
