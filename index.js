@@ -48,17 +48,29 @@ ${response.data.punchline}`
 app.command("/smile-bot-compliment", async ({ ack, respond }) => {
   await ack();
 
-  try {
-    const response = await axios.get("https://complimentr.com/api");
-    await respond({
-      text: response.data.compliment
-    });
-  } catch (err) {
-    await respond({ text: "Couldn't find a compliment right now." });
-  }
-});
+  const compliments = [
+   "You're doing an amazing job! 🌟",
+    "Your creativity is seriously impressive! 🎨",
+    "You've got this! Keep going! 💪",
+    "You make things better just by being here! ✨",
+    "Your hard work is paying off! 🚀",
+    "You're capable of more than you realize! 🔥",
+    "Keep being awesome! 😎",
+    "Your ideas have real potential! 💡",
+    "You're making progress, even when it doesn't feel like it! 🌱",
+    "You've got a great mindset! 🧠",
+    "Someone's gotta say it: you're pretty awesome. 😄",
+    "Your persistence is something to be proud of! 🏆",
+    "You're absolutely crushing it! 🚀",
+    "Keep building, keep learning, keep smiling! 😊",
+    "The world needs more people who keep trying like you do! 🌎"
+  ];
+
+  const randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
+  await respond({ text: randomCompliment });
+}); 
 app.command("/smile-bot-ping", async ({ command, ack, respond }) => {
-  const start = Date.now();
+  const start = Date.now();  
   await ack();
   const latency = Date.now() - start;
   await respond({ text: `Pong!\nLatency: ${latency}ms` });
@@ -66,10 +78,10 @@ app.command("/smile-bot-ping", async ({ command, ack, respond }) => {
 
 (async () => {
   try {
-    console.log("Connecting to Slack...");
+    console.log("Connecting to Slack..."); 
     await app.start();
     console.log("bot is running!");
-  } catch (error) {
+  } catch (error) {   
     console.error("Failed to start the Slack bot:", error);
     process.exitCode = 1;
   }
